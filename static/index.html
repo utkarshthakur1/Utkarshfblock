@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>F Block Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16242E; --ink-soft:#4C5D68; --paper:#EEF1F0; --card:#FFFFFF; --line:#DCE1E0;
+    --navy:#12384A; --navy-dark:#0B2530; --teal:#3E7C82;
+    --occ:#2F6B4F; --occ-bg:#E4EFE7;
+    --vac:#B0441E; --vac-bg:#F7E7DE;
+    --partial:#8A6415; --partial-bg:#FBF0DC;
+    --type5:#5A4A9F; --type6:#12384A; --guest:#7A5AA0; --guest-bg:#F1EAF7;
+    --male:#2E5B8F; --female:#A03D82;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;}
+  body{padding:0 0 60px 0;}
+  .wrap{max-width:1220px;margin:0 auto;padding:0 22px;}
+
+  header.top{background:var(--navy);color:#F3F1EA;position:relative;overflow:hidden;}
+  header.top::after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle at center, rgba(255,255,255,.06), transparent 70%);}
+  .top-inner{padding:30px 22px 24px;max-width:1220px;margin:0 auto;position:relative;z-index:1;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#9FB6BC;margin-bottom:8px;}
+  h1{font-family:'Source Serif 4',serif;font-weight:600;font-size:32px;margin:0 0 4px;letter-spacing:.2px;}
+  .sub{color:#B9C7CA;font-size:14.5px;margin:0;}
+  .userbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px;font-size:12.5px;color:#B9C7CA;}
+  #whoami b{color:#fff;}
+  .switchuser{background:none;border:1px solid rgba(255,255,255,.3);color:#D6E0E2;font-size:11px;padding:2px 8px;border-radius:12px;cursor:pointer;margin-left:6px;}
+  .switchuser:hover{background:rgba(255,255,255,.1);}
+  .activity-btn{margin-left:auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);color:#EAF1F2;font-size:12px;padding:6px 12px;border-radius:20px;cursor:pointer;position:relative;}
+  .activity-btn:hover{background:rgba(255,255,255,.16);}
+  .userbar .activity-btn:first-of-type{margin-left:auto;}
+  .activity-badge{background:var(--vac);color:#fff;border-radius:10px;font-size:10px;padding:1px 6px;margin-left:4px;}
+  .activity-list{display:flex;flex-direction:column;gap:0;}
+  .activity-item{padding:10px 0;border-top:1px solid var(--line);font-size:13px;}
+  .activity-item:first-child{border-top:none;}
+  .activity-item .who{font-weight:600;color:var(--navy);}
+  .activity-item .when{font-size:11px;color:#98A19E;font-family:'IBM Plex Mono',monospace;margin-left:6px;}
+  .activity-item .desc{color:var(--ink);margin-top:2px;}
+  .userpick{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 4px;}
+  .userpick button{flex:1;min-width:110px;padding:14px 10px;border-radius:9px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;font-family:'IBM Plex Sans';font-weight:600;font-size:14px;color:var(--navy);}
+  .userpick button:hover{border-color:var(--teal);background:#EEF6F6;}
+
+  .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);margin-top:24px;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .stat{background:var(--card);padding:16px 14px;}
+  .stat .n{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;color:var(--navy);line-height:1;}
+  .stat .l{font-size:11.5px;color:var(--ink-soft);margin-top:6px;text-transform:uppercase;letter-spacing:.05em;}
+  .stat.vacant .n{color:var(--vac);}
+  .stats{margin-top:-32px;position:relative;z-index:2;box-shadow:0 8px 24px rgba(18,56,74,.14);}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:26px 0 18px;}
+  .toolbar input[type=text]{flex:1;min-width:200px;padding:10px 14px;border:1px solid var(--line);border-radius:8px;font-family:'IBM Plex Sans';font-size:14px;background:var(--card);color:var(--ink);}
+  .toolbar input[type=text]:focus{outline:2px solid var(--teal);outline-offset:1px;}
+  .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .seg button{border:none;background:transparent;padding:9px 14px;font-size:13px;font-family:'IBM Plex Sans';cursor:pointer;color:var(--ink-soft);border-right:1px solid var(--line);white-space:nowrap;}
+  .seg button:last-child{border-right:none;}
+  .seg button.active{background:var(--navy);color:#fff;}
+  .seg button:focus-visible{outline:2px solid var(--teal);outline-offset:-2px;}
+  .viewToggle{display:flex;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .viewToggle button{border:none;background:transparent;padding:9px 16px;font-size:13px;font-family:'IBM Plex Sans';font-weight:500;cursor:pointer;color:var(--ink-soft);border-right:1px solid var(--line);white-space:nowrap;}
+  .viewToggle button:last-child{border-right:none;}
+  .viewToggle button.active{background:var(--navy);color:#fff;}
+
+  .flats{display:flex;flex-direction:column;gap:14px;}
+  .flat{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .flat-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg, #fff, #FBFBFA);flex-wrap:wrap;}
+  .hno{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:19px;color:var(--navy);min-width:30px;}
+  .typebadge{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;padding:3px 8px;border-radius:20px;font-weight:600;}
+  .typebadge.t5{background:#EDE9F7;color:var(--type5);}
+  .typebadge.t6{background:#E4EBED;color:var(--type6);}
+  .typebadge.guest{background:var(--guest-bg);color:var(--guest);}
+  .typebadge.male{background:#E3EBF5;color:var(--male);}
+  .typebadge.female{background:#FBE9F5;color:var(--female);}
+  .gender-select{font-size:11.5px;font-family:'IBM Plex Sans';border:1px solid var(--line);border-radius:6px;padding:4px 6px;color:var(--ink-soft);background:var(--card);}
+  .guestname{font-size:12px;color:var(--guest);font-style:italic;}
+  .flat-head .spacer{margin-left:auto;}
+  .flat-head .viewplan, .flat-head .addroom{font-size:12px;border-radius:6px;cursor:pointer;font-family:'IBM Plex Sans';padding:5px 10px;}
+  .flat-head .viewplan{color:var(--navy);background:#EEF3F4;border:1px solid var(--line);}
+  .flat-head .viewplan:hover{background:#E2ECEE;}
+  .flat-head .addroom{color:var(--teal);background:none;border:1px dashed var(--teal);}
+  .flat-head .addroom:hover{background:#EAF3F3;}
+
+  .rooms{display:flex;flex-direction:column;}
+  .room{display:grid;grid-template-columns:70px 104px 1fr 140px 150px 110px;gap:10px;align-items:center;padding:11px 16px;border-top:1px solid #F0F1EE;cursor:pointer;}
+  .room:hover{background:#F7F8F6;}
+  .room:first-child{border-top:none;}
+  .roomletter{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:var(--navy);background:#EEF3F4;border:1px solid var(--line);border-radius:5px;padding:4px 8px;text-align:center;width:fit-content;}
+  .roomlabelcol{display:flex;flex-direction:column;gap:2px;}
+  .roomlabel{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+  .bedcount{font-size:10.5px;color:#98A19E;}
+  .occlist{display:flex;flex-direction:column;gap:3px;}
+  .occrow{font-size:13.5px;color:var(--ink);font-weight:500;display:flex;align-items:baseline;gap:6px;}
+  .occrow .bd{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#B7BEBA;}
+  .occrow.empty{color:#A6ACA9;font-style:italic;font-weight:400;}
+  .occdesig{font-size:11.5px;color:var(--ink-soft);}
+  .contactcol{display:flex;flex-direction:column;gap:3px;}
+  .contact{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
+  .commentcol{font-size:11.5px;color:#8A6415;background:#FBF0DC;border:1px solid #EBD9A8;border-radius:5px;padding:4px 8px;line-height:1.3;}
+  .commentcol.none{background:none;border:none;padding:0;}
+  .stamp{justify-self:end;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.07em;padding:4px 9px;border-radius:3px;border:1.5px solid;text-transform:uppercase;transform:rotate(-2deg);white-space:nowrap;}
+  .stamp.full{color:var(--occ);border-color:var(--occ);background:var(--occ-bg);}
+  .stamp.partial{color:var(--partial);border-color:var(--partial);background:var(--partial-bg);}
+  .stamp.vacant{color:var(--vac);border-color:var(--vac);background:var(--vac-bg);}
+
+  @media (max-width:720px){
+    .room{grid-template-columns:1fr;gap:4px;}
+    .stamp{justify-self:start;transform:rotate(0deg);margin-top:4px;}
+    .stats{grid-template-columns:repeat(2,1fr);}
+  }
+
+  .blockmap{display:none;}
+  .blockmap.show{display:block;}
+  .bm-legend{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 18px;font-size:12.5px;color:var(--ink-soft);}
+  .bm-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .bm-swatch{width:12px;height:12px;border-radius:3px;display:inline-block;}
+  .bm-building{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px;overflow-x:auto;}
+  .bm-row{display:flex;gap:8px;justify-content:center;margin-bottom:8px;}
+  .bm-cell{min-width:56px;padding:8px 6px;border-radius:6px;text-align:center;cursor:pointer;border:1px solid transparent;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;transition:transform .1s;}
+  .bm-cell:hover{transform:translateY(-2px);}
+  .bm-cell .t{display:block;font-size:9px;font-weight:500;opacity:.75;letter-spacing:.04em;}
+  .bm-cell.full{background:var(--occ-bg);color:var(--occ);border-color:#BFDBC9;}
+  .bm-cell.partial{background:var(--partial-bg);color:var(--partial);border-color:#EBD9A8;}
+  .bm-cell.vacant{background:var(--vac-bg);color:var(--vac);border-color:#EBC5AE;}
+  .bm-gap{min-width:56px;}
+
+  .fp-modal{max-width:640px;}
+  .fp-svg-wrap{width:100%;overflow-x:auto;}
+  .fp-room{cursor:pointer;}
+  .fp-room rect{stroke:var(--navy);stroke-width:2;transition:opacity .1s;}
+  .fp-room:hover rect{opacity:.85;}
+  .fp-room.full rect{fill:var(--occ-bg);}
+  .fp-room.partial rect{fill:var(--partial-bg);}
+  .fp-room.vacant rect{fill:var(--vac-bg);}
+  .fp-room.common rect{fill:#F1F0EC;stroke:#B9C0BC;stroke-dasharray:4 3;}
+  .fp-room text{font-family:'IBM Plex Sans';fill:var(--ink);pointer-events:none;}
+  .fp-room .fp-label{font-size:15px;font-weight:600;}
+  .fp-room .fp-name{font-size:12px;}
+  .fp-room .fp-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:var(--ink-soft);}
+  .fp-note{font-size:12px;color:var(--ink-soft);margin-top:12px;line-height:1.5;}
+
+  .overlay{position:fixed;inset:0;background:rgba(15,25,30,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
+  .overlay.show{display:flex;}
+  .modal{background:var(--card);border-radius:12px;max-width:460px;width:100%;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25);max-height:88vh;overflow-y:auto;position:relative;}
+  .modal h3{font-family:'Source Serif 4',serif;font-size:20px;margin:0 0 4px;color:var(--navy);}
+  .modal .meta{font-size:12.5px;color:var(--ink-soft);margin-bottom:16px;font-family:'IBM Plex Mono',monospace;}
+  .bedblock{border:1px solid var(--line);border-radius:9px;padding:14px;margin-bottom:12px;background:#FBFBFA;}
+  .bedblock .bedhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .bedblock .bedhead b{font-size:13px;color:var(--navy);}
+  .field{margin-bottom:10px;}
+  .field label{display:block;font-size:11.5px;color:var(--ink-soft);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;}
+  .field input{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:7px;font-size:14px;font-family:'IBM Plex Sans';}
+  .field input:focus{outline:2px solid var(--teal);outline-offset:1px;}
+  .modal-actions{display:flex;gap:10px;margin-top:6px;}
+  .btn{flex:1;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'IBM Plex Sans';}
+  .btn-primary{background:var(--navy);color:#fff;}
+  .btn-primary:hover{background:var(--navy-dark);}
+  .btn-danger{background:var(--vac-bg);color:var(--vac);border:1px solid var(--vac);}
+  .btn-danger:hover{background:#F1D8CA;}
+  .btn-ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line);}
+  .btn-ghost:hover{background:#F3F3F1;}
+  .btn-share{background:var(--guest-bg);color:var(--guest);border:1px solid var(--guest);}
+  .btn-share:hover{background:#E9DEF2;}
+  .history{margin-top:8px;border-top:1px solid var(--line);padding-top:8px;}
+  .history-item{font-size:11.5px;color:var(--ink-soft);padding:3px 0;font-family:'IBM Plex Mono',monospace;}
+  .close-x{position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;color:var(--ink-soft);cursor:pointer;}
+
+  .empty-state{padding:60px 20px;text-align:center;color:var(--ink-soft);font-size:14px;}
+  .loading{padding:60px 20px;text-align:center;color:var(--ink-soft);}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;box-shadow:0 8px 20px rgba(0,0,0,.2);z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;}
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="eyebrow">GIMS Greater Noida &middot; Faculty Housing</div>
+    <h1>F Block Allotment Register</h1>
+    <p class="sub">Type-5 &amp; Type-6 residential units &mdash; physical room &amp; bed-level allotment</p>
+    <div class="userbar">
+      <span id="whoami">Acting as: <b id="whoami-name">—</b> <button class="switchuser" onclick="promptUser()">switch</button></span>
+      <button class="activity-btn" onclick="toggleActivity()">🔔 Activity <span id="activity-count" class="activity-badge" style="display:none;"></span></button>
+      <button class="activity-btn" onclick="undoLast()">↺ Undo last action</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="Search by name, H.No., or department…">
+    <div class="seg" id="typeSeg">
+      <button data-v="all" class="active">All Types</button>
+      <button data-v="5">Type-5</button>
+      <button data-v="6">Type-6</button>
+    </div>
+    <div class="seg" id="statusSeg">
+      <button data-v="all" class="active">All</button>
+      <button data-v="full">Full</button>
+      <button data-v="partial">Partial</button>
+      <button data-v="vacant">Vacant</button>
+    </div>
+    <div class="viewToggle" id="viewToggle">
+      <button data-v="list" class="active">List</button>
+      <button data-v="map">Block Map</button>
+    </div>
+  </div>
+
+  <div id="flatsRoot" class="flats"><div class="loading">Loading register…</div></div>
+
+  <div id="blockMapRoot" class="blockmap">
+    <div class="bm-legend">
+      <span><span class="bm-swatch" style="background:var(--occ-bg);border:1px solid #BFDBC9;"></span>Fully occupied</span>
+      <span><span class="bm-swatch" style="background:var(--partial-bg);border:1px solid #EBD9A8;"></span>Partially vacant</span>
+      <span><span class="bm-swatch" style="background:var(--vac-bg);border:1px solid #EBC5AE;"></span>Fully vacant</span>
+      <span style="margin-left:auto;color:var(--ink-soft);">Click any unit to open its floor plan</span>
+    </div>
+    <div class="bm-building" id="bmBuilding"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = "";  // same origin; set to e.g. "https://your-app.onrender.com" if serving frontend separately
+const USER_KEY = "fblock-current-user";
+const USER_OPTIONS = ["Dr. Ankit", "Dr. Utkarsh", "Sagar"];
+let DATA = null;
+let filters = { type: "all", status: "all", q: "" };
+let currentUser = null;
+let activityOpen = false;
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+async function loadData(){
+  try{
+    const res = await fetch(API_BASE + "/api/state");
+    if(res.ok){ DATA = await res.json(); if(!DATA.log) DATA.log = []; return; }
+  }catch(e){ console.error(e); }
+  toast("⚠ Could not reach server — is the backend running?");
+  DATA = {"5":[], "6":[], log:[]};
+}
+async function saveData(){
+  try{
+    const res = await fetch(API_BASE + "/api/state", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(DATA)
+    });
+    if(!res.ok) throw new Error("save failed");
+  }catch(e){ console.error(e); toast("⚠ Could not save — check your connection"); }
+}
+
+async function loadUser(){
+  const stored = localStorage.getItem(USER_KEY);
+  currentUser = (stored && USER_OPTIONS.includes(stored)) ? stored : null;
+}
+async function saveUser(name){
+  currentUser = name;
+  localStorage.setItem(USER_KEY, name);
+}
+
+function promptUser(){
+  const body = document.getElementById('modalBody');
+  body.className = "modal";
+  body.innerHTML = `
+    <button class="close-x" onclick="closeModal()">&times;</button>
+    <h3>Who's making changes?</h3>
+    <div class="meta">Every allotment, unallotment, and edit gets logged under this name.</div>
+    <div class="userpick">
+      ${USER_OPTIONS.map(u=>`<button onclick="pickUser('${u}')">${u}</button>`).join('')}
+    </div>
+  `;
+  document.getElementById('overlay').classList.add('show');
+}
+async function pickUser(name){
+  await saveUser(name);
+  document.getElementById('whoami-name').textContent = name;
+  closeModal();
+  toast(`Signed in as ${name}`);
+}
+
+/* ================= ACTIVITY LOG ================= */
+function logAction(ftype, hno, description){
+  const flat = findFlat(ftype, hno);
+  const entry = {
+    id: "log" + Date.now() + Math.random().toString(36).slice(2,6),
+    ts: new Date().toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+    user: currentUser || "Unknown",
+    description,
+    ftype, hno,
+    beforeRooms: JSON.parse(JSON.stringify(flat.rooms))
+  };
+  DATA.log.push(entry);
+  if(DATA.log.length > 200) DATA.log.shift();
+}
+
+async function undoLast(){
+  if(!DATA.log || !DATA.log.length){ toast("Nothing to undo"); return; }
+  const entry = DATA.log.pop();
+  const flat = findFlat(entry.ftype, entry.hno);
+  flat.rooms = entry.beforeRooms;
+  await saveData();
+  renderAll();
+  toast(`Undid: ${entry.description}`);
+}
+
+function toggleActivity(){
+  activityOpen = !activityOpen;
+  if(activityOpen) renderActivityPanel();
+  else closeModal();
+}
+
+function renderActivityPanel(){
+  const body = document.getElementById('modalBody');
+  body.className = "modal";
+  const entries = (DATA.log || []).slice().reverse();
+  const list = entries.length ? entries.map((e,i)=>`
+    <div class="activity-item">
+      <span class="who">${escapeHtml(e.user)}</span><span class="when">${escapeHtml(e.ts)}</span>
+      <div class="desc">${escapeHtml(e.description)}</div>
+    </div>`).join('') : `<div class="empty-state" style="padding:30px 0;">No activity logged yet.</div>`;
+  body.innerHTML = `
+    <button class="close-x" onclick="closeModal()">&times;</button>
+    <h3>Activity Log</h3>
+    <div class="meta">${entries.length} action${entries.length===1?'':'s'} recorded &middot; most recent first</div>
+    ${entries.length ? `<div class="modal-actions" style="margin-bottom:10px;"><button class="btn btn-danger" onclick="undoLast()">↺ Undo most recent action</button></div>` : ''}
+    <div class="activity-list">${list}</div>
+  `;
+  document.getElementById('overlay').classList.add('show');
+}
+
+function escapeHtml(s){
+  return (s||"").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function todayStr(){
+  const d = new Date();
+  const p = n=>String(n).padStart(2,'0');
+  return `${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()}`;
+}
+function truncate(s, n){ return s.length > n ? s.slice(0,n-1)+"…" : s; }
+
+/* room status: full (all beds filled), vacant (0 filled), partial (some filled) */
+function roomStatus(room){
+  const filled = room.occupants.filter(Boolean).length;
+  if(filled === 0) return "vacant";
+  if(filled === room.capacity) return "full";
+  return "partial";
+}
+
+function findFlat(ftype, hno){ return DATA[ftype].find(f=>f.hno===hno); }
+function findRoom(ftype, hno, roomId){
+  const flat = findFlat(ftype, hno);
+  return { flat, room: flat.rooms.find(r=>r.id===roomId) };
+}
+
+/* ================= STATS ================= */
+function renderStats(){
+  let rooms=0, beds=0, filled=0;
+  ["5","6"].forEach(ftype=>{
+    DATA[ftype].forEach(flat=>{
+      flat.rooms.forEach(r=>{
+        rooms++; beds += r.capacity;
+        filled += r.occupants.filter(Boolean).length;
+      });
+    });
+  });
+  const vacantBeds = beds - filled;
+  const pct = beds ? Math.round((filled/beds)*100) : 0;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="n">${rooms}</div><div class="l">Physical Rooms</div></div>
+    <div class="stat"><div class="n">${beds}</div><div class="l">Total Beds</div></div>
+    <div class="stat"><div class="n">${filled}</div><div class="l">Filled</div></div>
+    <div class="stat vacant"><div class="n">${vacantBeds}</div><div class="l">Vacant Beds</div></div>
+    <div class="stat"><div class="n">${pct}%</div><div class="l">Occupancy</div></div>
+  `;
+}
+
+/* ================= LIST VIEW ================= */
+function matchesFilter(room){
+  if(filters.status !== "all" && roomStatus(room) !== filters.status) return false;
+  if(filters.q){
+    const q = filters.q.toLowerCase();
+    const names = room.occupants.filter(Boolean).map(o=>o.name+" "+o.designation).join(" ");
+    const hay = (names+" "+(room.label||"")).toLowerCase();
+    if(!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+function roomSortIndex(slot){
+  const order = ["A","B","C","D","E","F"];
+  if(slot === null || slot === undefined) return -1;
+  const i = order.indexOf(slot);
+  return i === -1 ? 99 : i;
+}
+function sortedRooms(rooms){
+  return rooms.slice().sort((a,b)=>roomSortIndex(a.slot)-roomSortIndex(b.slot));
+}
+
+function renderFlats(){
+  const root = document.getElementById('flatsRoot');
+  let html = "";
+  let shown = 0;
+
+  ["5","6"].forEach(ftype=>{
+    if(filters.type !== "all" && ftype !== filters.type) return;
+    DATA[ftype].forEach(flat=>{
+      const orderedRooms = sortedRooms(flat.rooms);
+      const roomsToShow = orderedRooms.filter(matchesFilter);
+      const hnoMatches = filters.q && flat.hno.toLowerCase() === filters.q.toLowerCase();
+      const list = (filters.q || filters.status!=="all")
+        ? (roomsToShow.length ? roomsToShow : (hnoMatches ? orderedRooms : []))
+        : orderedRooms;
+      if(!list.length) return;
+      shown++;
+      const isWholeFlatOnly = flat.rooms.length===1 && flat.rooms[0].slot===null;
+      const showGender = !flat.isGuestHouse && !isWholeFlatOnly;
+      const genderBadge = flat.residentGender ? `<span class="typebadge ${flat.residentGender}">${flat.residentGender==='male'?'MALE RESIDENTS':'FEMALE RESIDENTS'}</span>` : '';
+      const genderSelect = showGender ? `<select class="gender-select" onchange="setGender('${ftype}','${flat.hno}',this.value)">
+          <option value="" ${!flat.residentGender?'selected':''}>Set gender…</option>
+          <option value="male" ${flat.residentGender==='male'?'selected':''}>Male residents</option>
+          <option value="female" ${flat.residentGender==='female'?'selected':''}>Female residents</option>
+        </select>` : '';
+      html += `<div class="flat" id="flatcard-${ftype}-${flat.hno}">
+        <div class="flat-head">
+          <span class="hno">${flat.hno}</span>
+          <span class="typebadge t${ftype}">TYPE-${ftype}</span>
+          ${flat.isGuestHouse ? `<span class="typebadge guest">GUEST HOUSE</span><span class="guestname">${escapeHtml(flat.guestHouseLabel||'')}</span>` : ''}
+          ${genderBadge}
+          ${genderSelect}
+          <span class="spacer"></span>
+          <button class="viewplan" onclick="openFloorPlan('${ftype}','${flat.hno}')">Floor plan</button>
+          <button class="addroom" onclick="openAllotModal('${ftype}','${flat.hno}')">+ Add room</button>
+        </div>
+        <div class="rooms">
+          ${list.map(r=>roomRow(ftype, flat.hno, r)).join('')}
+        </div>
+      </div>`;
+    });
+  });
+
+  if(!shown){ html = `<div class="empty-state">No rooms match your filters.</div>`; }
+  root.innerHTML = html;
+}
+
+function roomRow(ftype, hno, r){
+  const st = roomStatus(r);
+  const isWhole = r.slot === null;
+  const letterCell = isWhole ? `<div class="roomletter">Flat</div>` : `<div class="roomletter">Room ${r.slot}</div>`;
+  const bedNote = r.capacity===2 ? `<div class="bedcount">2-bed room</div>` : '';
+  const occLines = r.occupants.map((o,idx)=>{
+    if(o) return `<div class="occrow">${r.capacity===2?`<span class="bd">B${idx+1}</span>`:''}${escapeHtml(o.name)}</div>${o.designation?`<div class="occdesig">${escapeHtml(o.designation)}</div>`:''}`;
+    return `<div class="occrow empty">${r.capacity===2?`<span class="bd">B${idx+1}</span>`:''}Vacant bed</div>`;
+  }).join('');
+  const contacts = r.occupants.filter(Boolean).map(o=>o.contact).filter(Boolean);
+  const statusLabel = st==="full" ? "Occupied" : st==="partial" ? "Partial" : "Vacant";
+  const commentCell = r.comment ? `<div class="commentcol">⚠ ${escapeHtml(truncate(r.comment,60))}</div>` : `<div class="commentcol none"></div>`;
+  return `<div class="room" onclick="openDetail('${ftype}','${hno}','${r.id}')">
+    ${letterCell}
+    <div class="roomlabelcol"><div class="roomlabel">${escapeHtml(r.label)}</div>${bedNote}</div>
+    <div class="occlist">${occLines}</div>
+    <div class="contactcol">${contacts.map(c=>`<div class="contact">${escapeHtml(c)}</div>`).join('')}</div>
+    ${commentCell}
+    <div class="stamp ${st}">${statusLabel}</div>
+  </div>`;
+}
+
+/* ================= DETAIL / ALLOT / VACATE / SHARING ================= */
+function openDetail(ftype, hno, roomId){
+  const {room} = findRoom(ftype, hno, roomId);
+  renderRoomModal(ftype, hno, roomId);
+  document.getElementById('overlay').classList.add('show');
+}
+
+function renderRoomModal(ftype, hno, roomId){
+  const {flat, room} = findRoom(ftype, hno, roomId);
+  const body = document.getElementById('modalBody');
+  body.className = "modal";
+  const isWhole = room.slot === null;
+
+  let bedsHtml = "";
+  room.occupants.forEach((o, idx)=>{
+    if(o){
+      bedsHtml += `
+        <div class="bedblock">
+          <div class="bedhead"><b>${isWhole ? 'Occupant' : (room.capacity===2 ? `Bed ${idx+1}` : 'Occupant')}</b></div>
+          <div class="field"><label>Name</label><input id="bed-name-${idx}" value="${escapeHtml(o.name)}"></div>
+          <div class="field"><label>Designation</label><input id="bed-desig-${idx}" value="${escapeHtml(o.designation)}"></div>
+          <div class="field"><label>Contact</label><input id="bed-contact-${idx}" value="${escapeHtml(o.contact)}"></div>
+          <div class="field"><label>Date of allotment</label><input id="bed-date-${idx}" value="${escapeHtml(o.date)}"></div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="saveBed('${ftype}','${hno}','${roomId}',${idx})">Save</button>
+            <button class="btn btn-danger" onclick="vacateBed('${ftype}','${hno}','${roomId}',${idx})">Unallot</button>
+          </div>
+        </div>`;
+    }else{
+      bedsHtml += `
+        <div class="bedblock">
+          <div class="bedhead"><b>${isWhole ? 'Allot this flat' : (room.capacity===2 ? `Bed ${idx+1} — Vacant` : 'Allot this room')}</b></div>
+          <div class="field"><label>Occupant name</label><input id="bed-name-${idx}" placeholder="Dr. …"></div>
+          <div class="field"><label>Designation</label><input id="bed-desig-${idx}" placeholder="e.g. PG Surgery"></div>
+          <div class="field"><label>Contact</label><input id="bed-contact-${idx}" placeholder="10-digit number"></div>
+          <div class="modal-actions">
+            <button class="btn btn-primary" onclick="allotBed('${ftype}','${hno}','${roomId}',${idx})">Allot</button>
+          </div>
+        </div>`;
+    }
+  });
+
+  let typeSelector = "";
+  if(!isWhole){
+    typeSelector = `
+      <div class="field">
+        <label>Room type</label>
+        <select id="room-type-select" onchange="changeRoomType('${ftype}','${hno}','${roomId}', this.value)" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:7px;font-size:14px;font-family:'IBM Plex Sans';">
+          <option value="1" ${room.capacity===1?'selected':''}>Single — 1 bed</option>
+          <option value="2" ${room.capacity===2?'selected':''}>Sharing — 2 beds</option>
+        </select>
+      </div>`;
+  }
+
+  const histHtml = room.history && room.history.length ? `<div class="history"><label style="display:block;font-size:11px;color:var(--ink-soft);text-transform:uppercase;margin-bottom:6px;">Past occupants</label>
+    ${room.history.slice().reverse().map(h=>`<div class="history-item">${escapeHtml(h.occupant)} — ${escapeHtml(h.date||'')} to ${escapeHtml(h.vacatedOn)}</div>`).join('')}
+  </div>` : '';
+
+  const commentHtml = `
+    <div class="field">
+      <label>Room note / comment (e.g. maintenance issue — flagging this keeps people from allotting it by mistake)</label>
+      <input id="room-comment" value="${escapeHtml(room.comment||'')}" placeholder="e.g. Toilet not in working condition">
+    </div>
+    <div class="modal-actions" style="margin-bottom:14px;">
+      <button class="btn btn-ghost" onclick="saveComment('${ftype}','${hno}','${roomId}')">Save note</button>
+    </div>`;
+
+  body.innerHTML = `
+    <button class="close-x" onclick="closeModal()">&times;</button>
+    <h3>${isWhole ? 'Whole Flat' : `Room ${room.slot} — ${escapeHtml(room.label)}`}</h3>
+    <div class="meta">Type-${ftype} &middot; H.No ${hno}${flat.isGuestHouse ? ' &middot; Guest House' : ''} ${!isWhole && room.capacity===2 ? ' &middot; 2-bed shared room' : ''}</div>
+    ${room.comment ? `<div class="commentcol" style="margin-bottom:14px;">⚠ ${escapeHtml(room.comment)}</div>` : ''}
+    ${typeSelector}
+    ${bedsHtml}
+    ${commentHtml}
+    ${histHtml}
+    <div class="modal-actions" style="margin-top:6px;">
+      <button class="btn btn-danger" onclick="deleteRoom('${ftype}','${hno}','${roomId}')">Delete this ${isWhole?'flat entry':'room'}</button>
+    </div>
+  `;
+}
+
+async function changeRoomType(ftype, hno, roomId, value){
+  const {room} = findRoom(ftype, hno, roomId);
+  const newCap = parseInt(value, 10);
+  if(newCap === room.capacity) return;
+  if(newCap === 2){
+    logAction(ftype, hno, `changed Room ${room.slot} (H.No ${hno}) to sharing (2 beds)`);
+    room.capacity = 2;
+    room.label = "Sharing";
+    if(room.occupants.length < 2) room.occupants.push(null);
+  }else{
+    if(room.occupants[1]){
+      toast("Bed 2 is occupied — unallot it first");
+      renderRoomModal(ftype, hno, roomId);
+      return;
+    }
+    logAction(ftype, hno, `changed Room ${room.slot} (H.No ${hno}) to single occupancy`);
+    room.capacity = 1;
+    room.label = "Single";
+    room.occupants = [room.occupants[0] || null];
+  }
+  await saveData();
+  renderRoomModal(ftype, hno, roomId);
+  renderAll();
+  toast(newCap===2 ? "Room set to sharing" : "Room set to single");
+}
+
+async function saveComment(ftype, hno, roomId){
+  const {room} = findRoom(ftype, hno, roomId);
+  const text = document.getElementById('room-comment').value.trim();
+  logAction(ftype, hno, `added a note to ${room.slot ? 'Room '+room.slot : 'Whole Flat'} (H.No ${hno}): "${text}"`);
+  room.comment = text;
+  await saveData();
+  renderRoomModal(ftype, hno, roomId);
+  renderAll();
+  toast("Note saved");
+}
+
+async function allotBed(ftype, hno, roomId, idx){
+  const {room} = findRoom(ftype, hno, roomId);
+  const name = document.getElementById(`bed-name-${idx}`).value.trim();
+  if(!name){ toast("Enter an occupant name"); return; }
+  const roomDesc = room.slot ? `Room ${room.slot}` : 'Whole Flat';
+  logAction(ftype, hno, `allotted ${name} to ${roomDesc}${room.capacity===2?` (Bed ${idx+1})`:''} — H.No ${hno}`);
+  room.occupants[idx] = {
+    name,
+    designation: document.getElementById(`bed-desig-${idx}`).value.trim(),
+    contact: document.getElementById(`bed-contact-${idx}`).value.trim(),
+    date: todayStr()
+  };
+  await saveData();
+  renderRoomModal(ftype, hno, roomId);
+  renderAll();
+  toast("Allotted to " + name);
+}
+
+async function saveBed(ftype, hno, roomId, idx){
+  const {room} = findRoom(ftype, hno, roomId);
+  const o = room.occupants[idx];
+  const roomDesc = room.slot ? `Room ${room.slot}` : 'Whole Flat';
+  logAction(ftype, hno, `edited details for ${o.name} in ${roomDesc} — H.No ${hno}`);
+  o.name = document.getElementById(`bed-name-${idx}`).value.trim();
+  o.designation = document.getElementById(`bed-desig-${idx}`).value.trim();
+  o.contact = document.getElementById(`bed-contact-${idx}`).value.trim();
+  o.date = document.getElementById(`bed-date-${idx}`).value.trim();
+  await saveData();
+  renderRoomModal(ftype, hno, roomId);
+  renderAll();
+  toast("Details updated");
+}
+
+async function vacateBed(ftype, hno, roomId, idx){
+  const {room} = findRoom(ftype, hno, roomId);
+  const o = room.occupants[idx];
+  const roomDesc = room.slot ? `Room ${room.slot}` : 'Whole Flat';
+  logAction(ftype, hno, `unallotted ${o.name} from ${roomDesc} — H.No ${hno}`);
+  if(!room.history) room.history = [];
+  room.history.push({occupant:o.name, date:o.date, vacatedOn: todayStr()});
+  room.occupants[idx] = null;
+  await saveData();
+  renderRoomModal(ftype, hno, roomId);
+  renderAll();
+  toast("Bed marked vacant");
+}
+
+async function deleteRoom(ftype, hno, roomId){
+  const {flat, room} = findRoom(ftype, hno, roomId);
+  const roomDesc = room.slot ? `Room ${room.slot}` : 'Whole Flat';
+  const hasOccupants = room.occupants.some(Boolean);
+  const msg = hasOccupants
+    ? `${roomDesc} still has an occupant. Delete it anyway?`
+    : (flat.rooms.length===1 ? `This is the only room in H.No ${hno} — deleting it leaves the flat empty. Continue?` : `Delete ${roomDesc} from H.No ${hno}?`);
+  if(!confirm(msg)) return;
+  logAction(ftype, hno, `deleted ${roomDesc} from H.No ${hno}`);
+  flat.rooms = flat.rooms.filter(r=>r.id!==roomId);
+  await saveData();
+  closeModal();
+  renderAll();
+  toast("Room deleted");
+}
+
+/* ================= ADD ROOM ================= */
+function openAllotModal(ftype, hno){
+  const body = document.getElementById('modalBody');
+  body.className = "modal";
+  body.innerHTML = `
+    <button class="close-x" onclick="closeModal()">&times;</button>
+    <h3>Add Room</h3>
+    <div class="meta">Type-${ftype} &middot; H.No ${hno}</div>
+    <div class="field"><label>Room letter / label</label><input id="new-slot" placeholder="e.g. A, B, Store"></div>
+    <div class="field"><label>Sharing (2 beds)?</label>
+      <select id="new-sharing" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:7px;font-size:14px;">
+        <option value="0">No — single occupancy</option>
+        <option value="1">Yes — 2-person sharing</option>
+      </select>
+    </div>
+    <div class="field"><label>Occupant name (leave blank if vacant)</label><input id="new-name" placeholder="Dr. …"></div>
+    <div class="field"><label>Designation</label><input id="new-desig"></div>
+    <div class="field"><label>Contact</label><input id="new-contact"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="addRoom('${ftype}','${hno}')">Add</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    </div>
+  `;
+  document.getElementById('overlay').classList.add('show');
+}
+
+async function addRoom(ftype, hno){
+  const flat = findFlat(ftype, hno);
+  const slot = document.getElementById('new-slot').value.trim() || "?";
+  const sharing = document.getElementById('new-sharing').value === "1";
+  const name = document.getElementById('new-name').value.trim();
+  const desig = document.getElementById('new-desig').value.trim();
+  const contact = document.getElementById('new-contact').value.trim();
+  const cap = sharing ? 2 : 1;
+  const occupants = [name ? {name, designation:desig, contact, date: todayStr()} : null];
+  if(cap===2) occupants.push(null);
+  logAction(ftype, hno, `added a new room (${slot}) to H.No ${hno}`);
+  flat.rooms.push({
+    id: `${ftype}-${hno}-x${Date.now()}`, slot, label: sharing?"Sharing":"Single",
+    capacity: cap, occupants, history: [], comment: ""
+  });
+  await saveData();
+  closeModal();
+  renderAll();
+  toast("Room added");
+}
+
+async function setGender(ftype, hno, value){
+  const flat = findFlat(ftype, hno);
+  logAction(ftype, hno, `set H.No ${hno} as ${value==='male'?'male':value==='female'?'female':'unassigned'} residents`);
+  flat.residentGender = value || null;
+  await saveData();
+  renderAll();
+  toast(value ? `Set as ${value==='male'?'male':'female'} residents flat` : "Gender designation cleared");
+}
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('modalBody').className = "modal";
+  activityOpen = false;
+}
+document.getElementById('overlay').addEventListener('click', e=>{ if(e.target.id === 'overlay') closeModal(); });
+
+/* ================= FILTER CONTROLS ================= */
+document.getElementById('search').addEventListener('input', e=>{ filters.q = e.target.value.trim(); renderFlats(); });
+document.getElementById('typeSeg').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  [...btn.parentElement.children].forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); filters.type = btn.dataset.v; renderFlats();
+});
+document.getElementById('statusSeg').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  [...btn.parentElement.children].forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); filters.status = btn.dataset.v; renderFlats();
+});
+document.getElementById('viewToggle').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  [...btn.parentElement.children].forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const v = btn.dataset.v;
+  document.getElementById('flatsRoot').style.display = v==='list' ? '' : 'none';
+  document.getElementById('blockMapRoot').classList.toggle('show', v==='map');
+  if(v==='map') renderBlockMap();
+});
+
+function renderAll(){
+  renderStats(); renderFlats(); renderBlockMap();
+  const badge = document.getElementById('activity-count');
+  const n = (DATA.log || []).length;
+  if(badge){ badge.style.display = n ? '' : 'none'; badge.textContent = n; }
+}
+
+/* ================= BLOCK MAP ================= */
+const BLOCK_ROWS = [
+  [["6","10"],["6","12"],["6","14"],["6","16"],["6","18"],["6","20"]],
+  [["6","9"],["6","11"],["6","13"],["6","15"],["6","17"],["6","19"]],
+  [["5","14"],["5","16"],["6","6"],["6","8"],["6","22"],["6","24"],["5","18"],["5","20"]],
+  [["5","13"],["5","15"],["6","5"],["6","7"],["6","21"],["6","23"],["5","17"],["5","19"]],
+  [["5","10"],["5","12"],null,null,null,null,["5","22"],["5","24"]],
+  [["5","9"],["5","11"],["6","4"],["6","2"],["6","28"],["6","26"],["5","21"],["5","23"]],
+  [null,null,["6","3"],["6","1"],["6","27"],["6","25"],null,null],
+  [["5","6"],["5","8"],null,null,null,null,["5","26"],["5","28"]],
+  [["5","5"],["5","7"],null,null,null,null,["5","25"],["5","27"]],
+  [["5","2"],["5","4"],null,null,null,null,["5","30"],["5","32"]],
+  [["5","1"],["5","3"],null,null,null,null,["5","29"],["5","31"]]
+];
+
+function computeFlatStatus(ftype, hno){
+  const flat = DATA[ftype] && DATA[ftype].find(f=>f.hno===hno);
+  if(!flat || !flat.rooms.length) return null;
+  let beds=0, filled=0;
+  flat.rooms.forEach(r=>{ beds+=r.capacity; filled+=r.occupants.filter(Boolean).length; });
+  if(filled===0) return "vacant";
+  if(filled===beds) return "full";
+  return "partial";
+}
+
+function renderBlockMap(){
+  const root = document.getElementById('bmBuilding');
+  let html = "";
+  BLOCK_ROWS.forEach(row=>{
+    html += `<div class="bm-row">`;
+    row.forEach(cell=>{
+      if(!cell){ html += `<div class="bm-gap"></div>`; return; }
+      const [ftype, hno] = cell;
+      const st = computeFlatStatus(ftype, hno) || "vacant";
+      html += `<div class="bm-cell ${st}" onclick="openFloorPlan('${ftype}','${hno}')" title="Type-${ftype}, H.No ${hno}"><span class="t">TYPE-${ftype}</span>${hno}</div>`;
+    });
+    html += `</div>`;
+  });
+  root.innerHTML = html;
+}
+
+/* ================= FLOOR PLAN ================= */
+const FP_TEMPLATES = {
+  "5": { viewBox: "0 40 1010 730", rooms: [
+    {slot:"A", x:75,  y:191, w:240, h:352, tag:"Master Bedroom"},
+    {slot:"hall", x:315, y:191, w:390, h:352, tag:"Common", common:true, label:"Hall"},
+    {slot:"E", x:705, y:48,  w:222, h:143, tag:"Small / outside"},
+    {slot:"D", x:705, y:191, w:144, h:217, tag:"Bedroom"},
+    {slot:"kitchen", x:668, y:465, w:201, h:153, tag:"Common", common:true, label:"Kitchen"},
+    {slot:"B", x:216, y:541, w:225, h:215, tag:"Bedroom"},
+    {slot:"C", x:441, y:541, w:227, h:215, tag:"Bedroom"}
+  ]},
+  "6": { viewBox: "0 40 1010 730", rooms: [
+    {slot:"A", x:75,  y:191, w:240, h:352, tag:"Master Bedroom"},
+    {slot:"D", x:315, y:191, w:185, h:217, tag:"Bedroom"},
+    {slot:"hall", x:500, y:191, w:205, h:217, tag:"Common", common:true, label:"Hall"},
+    {slot:"F", x:705, y:48,  w:222, h:143, tag:"Small / outside"},
+    {slot:"E", x:705, y:191, w:144, h:217, tag:"Bedroom"},
+    {slot:"kitchen", x:668, y:465, w:201, h:153, tag:"Common", common:true, label:"Kitchen"},
+    {slot:"B", x:250, y:541, w:210, h:215, tag:"Bedroom"},
+    {slot:"C", x:460, y:541, w:208, h:215, tag:"Bedroom"}
+  ]}
+};
+
+function openFloorPlan(ftype, hno){
+  const flat = findFlat(ftype, hno);
+  const tpl = FP_TEMPLATES[ftype];
+
+  const isWholeFlat = flat.rooms.length===1 && flat.rooms[0].slot===null;
+  let svgRooms = "";
+  tpl.rooms.forEach(t=>{
+    if(t.common){
+      svgRooms += `<g class="fp-room common">
+        <rect x="${t.x}" y="${t.y}" width="${t.w}" height="${t.h}" rx="4"/>
+        <text class="fp-label" x="${t.x+t.w/2}" y="${t.y+t.h/2-6}" text-anchor="middle">${t.label}</text>
+        <text class="fp-tag" x="${t.x+t.w/2}" y="${t.y+t.h/2+12}" text-anchor="middle">${t.tag}</text>
+      </g>`;
+      return;
+    }
+    let room, st, names, roomIdForClick;
+    if(isWholeFlat){
+      room = flat.rooms[0];
+      st = roomStatus(room);
+      names = room.occupants[0] ? room.occupants[0].name : "Vacant";
+      roomIdForClick = room.id;
+    }else{
+      room = flat.rooms.find(r=>r.slot===t.slot);
+      st = room ? roomStatus(room) : "vacant";
+      names = room ? (room.occupants.filter(Boolean).map(o=>o.name).join(" / ") || "Vacant") : "—";
+      roomIdForClick = room ? room.id : "";
+    }
+    svgRooms += `<g class="fp-room ${st}" onclick="${roomIdForClick ? `openDetailFromPlan('${ftype}','${hno}','${roomIdForClick}')` : ''}">
+      <rect x="${t.x}" y="${t.y}" width="${t.w}" height="${t.h}" rx="4"/>
+      <text class="fp-label" x="${t.x+t.w/2}" y="${t.y+30}" text-anchor="middle">${isWholeFlat ? 'Whole Flat' : t.slot}</text>
+      <text class="fp-tag" x="${t.x+t.w/2}" y="${t.y+48}" text-anchor="middle">${t.tag}</text>
+      <text class="fp-name" x="${t.x+t.w/2}" y="${t.y+t.h/2+8}" text-anchor="middle">${escapeHtml(truncate(names,26))}</text>
+    </g>`;
+  });
+
+  const body = document.getElementById('modalBody');
+  body.className = "modal fp-modal";
+  body.innerHTML = `
+    <button class="close-x" onclick="closeModal()">&times;</button>
+    <h3>Floor Plan — H.No ${hno}</h3>
+    <div class="meta">Type-${ftype}${flat.isGuestHouse ? ' &middot; Guest House' : ''}${flat.residentGender ? ` &middot; ${flat.residentGender==='male'?'Male residents':'Female residents'}` : ''} &middot; click a room to open its allotment</div>
+    <div class="fp-svg-wrap"><svg viewBox="${tpl.viewBox}" width="100%" style="min-width:520px;">${svgRooms}</svg></div>
+    <div class="fp-note">Room letters follow the standard Type-${ftype} layout. Rooms shaded amber have one free bed; rust-colored rooms are fully vacant.</div>
+  `;
+  document.getElementById('overlay').classList.add('show');
+}
+
+function openDetailFromPlan(ftype, hno, roomId){
+  openDetail(ftype, hno, roomId);
+}
+
+(async function init(){
+  await loadData();
+  await loadUser();
+  document.getElementById('whoami-name').textContent = currentUser || "not set";
+  renderAll();
+  if(!currentUser) promptUser();
+})();
+</script>
+</body>
+</html>
